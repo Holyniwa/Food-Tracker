@@ -63,7 +63,7 @@ function App() {
           <div>
             <div className="flex gap-2" style={{ alignItems: 'baseline' }}>
               <h1 style={{ margin: 0, letterSpacing: '0.05em', lineHeight: 1.2 }}>FOOD TRACKER</h1>
-              <span className="text-muted" style={{ fontSize: '0.75rem', fontWeight: 'bold', opacity: 0.6 }}>v0.1.1</span>
+              <span className="text-muted" style={{ fontSize: '0.75rem', fontWeight: 'bold', opacity: 0.6 }}>v0.1.2</span>
             </div>
             <p style={{ fontSize: '0.8rem', opacity: 0.9 }}>
               <span className="text-muted">Active Profile:</span> <span style={{ color: 'var(--accent-color)', fontWeight: '500' }}>{activeProfile.name}</span>

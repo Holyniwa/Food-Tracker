@@ -4,9 +4,25 @@ import { Sparkles, CheckCircle2 } from 'lucide-react';
 export default function PatchNotes() {
   const versions = [
     {
+      date: "May 5, 2026",
+      version: "v0.1.2",
+      status: "Latest",
+      changes: [
+        {
+          title: "UI Refinement & Layout Optimization",
+          description: "Ported layout improvements from the Activity Tracker to enhance usability and clarity.",
+          bullets: [
+            "Enhanced Visibility: Moved Categories to a new row in the food entry modal, allowing the Item Name input to take full width for better readability.",
+            "Compact Modal Design: Tightened vertical spacing around 'Low Stock Alerts' and footer sections to eliminate unnecessary dead space.",
+            "Visual Polish: Standardized modal padding and margins for a sleek, high-end aesthetic across all management interfaces."
+          ]
+        }
+      ]
+    },
+    {
       date: "April 26, 2026",
       version: "v0.1.1",
-      status: "Latest",
+      status: null,
       changes: [
         {
           title: "Multi-Profile Management",
@@ -81,7 +97,7 @@ export default function PatchNotes() {
             </div>
             {ver.status && <span style={{ fontSize: '0.75rem', background: 'var(--accent-color)', color: 'white', padding: '0.2rem 0.6rem', borderRadius: '4px', fontWeight: 'bold' }}>{ver.status}</span>}
           </div>
-          
+
           <div style={{ padding: '1.5rem' }} className="grid gap-6">
             {ver.changes.map((change, cIdx) => (
               <div key={cIdx} className="grid gap-2">

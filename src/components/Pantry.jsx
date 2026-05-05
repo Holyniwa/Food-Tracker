@@ -10,14 +10,14 @@ export default function Pantry({ data, setData, globalFilter, setGlobalFilter })
   const [calibrateItem, setCalibrateItem] = useState(null);
   const [syncMode, setSyncMode] = useState('packs');
   const [calibrateInput, setCalibrateInput] = useState("");
-  
+
   const [localFilter, setLocalFilter] = useState('All');
   const filterCat = data.settings.syncFilters ? globalFilter : localFilter;
   const setFilterCat = (val) => {
     if (data.settings.syncFilters) setGlobalFilter(val);
     else setLocalFilter(val);
   };
-  
+
   const existingCategories = useMemo(() => {
     const raw = [...new Set(data.catalog.flatMap(c => (c.category || '').split(',').map(s => s.trim()).filter(Boolean)))];
     const priority = ['Breakfast', 'Lunch', 'Dinner', 'Food', 'Drink'];
@@ -137,8 +137,8 @@ export default function Pantry({ data, setData, globalFilter, setGlobalFilter })
 
         {existingCategories.length > 0 && (
           <div className="flex gap-1" style={{ justifyContent: 'flex-end', overflowX: 'auto', paddingBottom: '0.25rem' }}>
-            <button 
-              onClick={() => setFilterCat('All')} 
+            <button
+              onClick={() => setFilterCat('All')}
               className={`btn-ghost ${filterCat === 'All' ? 'active' : ''}`}
               style={{ fontSize: '0.8rem', borderRadius: '16px', padding: '0.2rem 0.6rem', border: filterCat === 'All' ? '1px solid var(--accent-color)' : '1px solid transparent' }}
             >
@@ -149,8 +149,8 @@ export default function Pantry({ data, setData, globalFilter, setGlobalFilter })
                 {cat === 'Food' && idx > 0 && (
                   <span style={{ alignSelf: 'center', margin: '0 0.2rem', opacity: 0.3 }}>·</span>
                 )}
-                <button 
-                  onClick={() => setFilterCat(cat)} 
+                <button
+                  onClick={() => setFilterCat(cat)}
                   className={`btn-ghost ${filterCat === cat ? 'active' : ''}`}
                   style={{ fontSize: '0.8rem', borderRadius: '16px', padding: '0.2rem 0.6rem', border: filterCat === cat ? '1px solid var(--accent-color)' : '1px solid transparent' }}
                 >
@@ -170,80 +170,80 @@ export default function Pantry({ data, setData, globalFilter, setGlobalFilter })
               return (item.category || '').split(',').map(s => s.trim()).includes(filterCat);
             })
             .map(item => {
-            const nowObj = parseLocalDate(getNowInTimeZone(data.settings.timeZone));
-            const health = calculateItemHealth(item, data.inventory, nowObj);
-            return (
-              <div key={item.id} className="glass-panel" style={{ position: 'relative' }}>
-                <div className="flex flex-between" style={{ marginBottom: '0.5rem', alignItems: 'flex-start' }}>
-                  <div className="flex flex-col gap-1">
-                    <h3 style={{ margin: 0 }}>{item.name}</h3>
-                    {item.category && (
-                      <div className="flex gap-2 flex-wrap" style={{ marginTop: '0.15rem' }}>
-                        {item.category.split(',').map(c => c.trim()).filter(Boolean).map(cat => (
-                          <span key={cat} style={{ fontSize: '0.65rem', background: 'var(--accent-color)', color: 'white', padding: '0.1rem 0.4rem', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{cat}</span>
-                        ))}
-                      </div>
+              const nowObj = parseLocalDate(getNowInTimeZone(data.settings.timeZone));
+              const health = calculateItemHealth(item, data.inventory, nowObj);
+              return (
+                <div key={item.id} className="glass-panel" style={{ position: 'relative' }}>
+                  <div className="flex flex-between" style={{ marginBottom: '0.5rem', alignItems: 'flex-start' }}>
+                    <div className="flex flex-col gap-1">
+                      <h3 style={{ margin: 0 }}>{item.name}</h3>
+                      {item.category && (
+                        <div className="flex gap-2 flex-wrap" style={{ marginTop: '0.15rem' }}>
+                          {item.category.split(',').map(c => c.trim()).filter(Boolean).map(cat => (
+                            <span key={cat} style={{ fontSize: '0.65rem', background: 'var(--accent-color)', color: 'white', padding: '0.1rem 0.4rem', borderRadius: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{cat}</span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex gap-2" style={{ alignItems: 'center' }}>
+                      <button className="btn-ghost" style={{ padding: '0.25rem' }} onClick={() => setEditingItem({ ...item, id: null, name: item.name + ' (Copy)' })} title="Duplicate Food">
+                        <Copy size={16} />
+                      </button>
+                      <button className="btn-ghost" style={{ padding: '0.25rem' }} onClick={() => setEditingItem(item)} title="Edit Food Details">
+                        <Edit2 size={16} />
+                      </button>
+                      <button className="btn-ghost text-danger" style={{ padding: '0.25rem' }} onClick={() => deleteItem(item.id)} title="Delete Food">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-2 text-muted" style={{ fontSize: '0.85rem', marginBottom: '1.5rem', background: 'rgba(0,0,0,0.2)', padding: '0.75rem', borderRadius: '8px' }}>
+                    <div className="flex flex-between">
+                      <span>Pack Size:</span> <span>{item.unitSize} units</span>
+                    </div>
+                    {item.isUntracked ? (
+                      <>
+                        <div className="flex flex-between">
+                          <span>Tracking:</span> <span>Packs Only</span>
+                        </div>
+                        <div className="flex flex-between" style={{ borderTop: '1px solid var(--panel-border)', paddingTop: '0.5rem', marginTop: '0.25rem', color: 'var(--text-primary)' }}>
+                          <span>Est. Packs Remaining:</span>
+                          <span style={{ fontWeight: 'bold' }}>{health.currentRaw <= 0 ? '0' : parseFloat((health.currentRaw / parseFloat(item.unitSize || 1)).toFixed(2))}</span>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex flex-between">
+                          <span>Serving Def:</span> <span>{item.servingUnits || item.servingSize || 1} unit(s) = {item.servingYield || 1} serving(s)</span>
+                        </div>
+                        <div className="flex flex-between">
+                          <span>Consumption:</span> <span>{item.rate} serving(s) / {item.rateUnit}</span>
+                        </div>
+                        <div className="flex flex-between" style={{ borderTop: '1px solid var(--panel-border)', paddingTop: '0.5rem', marginTop: '0.25rem', color: 'var(--text-primary)' }}>
+                          <span>Current Est. Servings:</span>
+                          <span style={{ fontWeight: 'bold' }}>{health.currentServings <= 0 ? '0' : parseFloat(health.currentServings.toFixed(1))}</span>
+                        </div>
+                      </>
                     )}
                   </div>
-                  <div className="flex gap-2" style={{ alignItems: 'center' }}>
-                    <button className="btn-ghost" style={{ padding: '0.25rem' }} onClick={() => setEditingItem({ ...item, id: null, name: item.name + ' (Copy)' })} title="Duplicate Food">
-                      <Copy size={16} />
+
+                  <div className="flex gap-2" style={{ marginTop: 'auto' }}>
+                    <button className="btn-success" style={{ flex: 1 }} onClick={() => setRestockItem(item)}>
+                      <ShoppingCart size={16} /> Restock
                     </button>
-                    <button className="btn-ghost" style={{ padding: '0.25rem' }} onClick={() => setEditingItem(item)} title="Edit Food Details">
-                      <Edit2 size={16} />
-                    </button>
-                    <button className="btn-ghost text-danger" style={{ padding: '0.25rem' }} onClick={() => deleteItem(item.id)} title="Delete Food">
-                      <Trash2 size={16} />
+                    <button className="btn-ghost" style={{ flex: 1, border: '1px solid var(--panel-border)' }} onClick={() => {
+                      setCalibrateItem({ ...item, currentServings: health.currentServings });
+                      const sPerPack = (parseFloat(item.unitSize || 1) * (parseFloat(item.servingYield || 1) / parseFloat(item.servingUnits || item.servingSize || 1)));
+                      setSyncMode('packs');
+                      setCalibrateInput(parseFloat((Math.max(0, health.currentServings || 0) / sPerPack).toFixed(2)));
+                    }}>
+                      <RefreshCw size={16} /> Sync
                     </button>
                   </div>
                 </div>
-
-                <div className="grid gap-2 text-muted" style={{ fontSize: '0.85rem', marginBottom: '1.5rem', background: 'rgba(0,0,0,0.2)', padding: '0.75rem', borderRadius: '8px' }}>
-                  <div className="flex flex-between">
-                    <span>Pack Size:</span> <span>{item.unitSize} units</span>
-                  </div>
-                  {item.isUntracked ? (
-                    <>
-                      <div className="flex flex-between">
-                        <span>Tracking:</span> <span>Packs Only</span>
-                      </div>
-                      <div className="flex flex-between" style={{ borderTop: '1px solid var(--panel-border)', paddingTop: '0.5rem', marginTop: '0.25rem', color: 'var(--text-primary)' }}>
-                        <span>Est. Packs Remaining:</span>
-                        <span style={{ fontWeight: 'bold' }}>{health.currentRaw <= 0 ? '0' : parseFloat((health.currentRaw / parseFloat(item.unitSize || 1)).toFixed(2))}</span>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="flex flex-between">
-                        <span>Serving Def:</span> <span>{item.servingUnits || item.servingSize || 1} unit(s) = {item.servingYield || 1} serving(s)</span>
-                      </div>
-                      <div className="flex flex-between">
-                        <span>Consumption:</span> <span>{item.rate} serving(s) / {item.rateUnit}</span>
-                      </div>
-                      <div className="flex flex-between" style={{ borderTop: '1px solid var(--panel-border)', paddingTop: '0.5rem', marginTop: '0.25rem', color: 'var(--text-primary)' }}>
-                        <span>Current Est. Servings:</span>
-                        <span style={{ fontWeight: 'bold' }}>{health.currentServings <= 0 ? '0' : parseFloat(health.currentServings.toFixed(1))}</span>
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                <div className="flex gap-2" style={{ marginTop: 'auto' }}>
-                  <button className="btn-success" style={{ flex: 1 }} onClick={() => setRestockItem(item)}>
-                    <ShoppingCart size={16} /> Restock
-                  </button>
-                  <button className="btn-ghost" style={{ flex: 1, border: '1px solid var(--panel-border)' }} onClick={() => {
-                    setCalibrateItem({ ...item, currentServings: health.currentServings });
-                    const sPerPack = (parseFloat(item.unitSize || 1) * (parseFloat(item.servingYield || 1) / parseFloat(item.servingUnits || item.servingSize || 1)));
-                    setSyncMode('packs');
-                    setCalibrateInput(parseFloat((Math.max(0, health.currentServings || 0) / sPerPack).toFixed(2)));
-                  }}>
-                    <RefreshCw size={16} /> Sync
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       )}
 
@@ -269,25 +269,25 @@ export default function Pantry({ data, setData, globalFilter, setGlobalFilter })
                 })
                 .sort((a, b) => parseLocalDate(b.dateAdded) - parseLocalDate(a.dateAdded))
                 .map(inv => {
-                const catalogItem = data.catalog.find(c => c.id === inv.catalogId);
-                return (
-                  <tr key={inv.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
-                    <td style={{ padding: '0.75rem' }}>{formatDisplayDate(parseLocalDate(inv.dateAdded))}</td>
-                    <td style={{ padding: '0.75rem' }}>{catalogItem ? catalogItem.name : 'Unknown Item'}</td>
-                    <td style={{ padding: '0.75rem' }}>
-                      {inv.type === 'reset' ? <span style={{ color: 'var(--warning-color)' }}>Manual Reset</span> : <span style={{ color: 'var(--success-color)' }}>Restock</span>}
-                    </td>
-                    <td style={{ padding: '0.75rem' }}>
-                      {inv.type === 'reset' ? `${inv.quantity} servings set` : `+${inv.quantity} packs`}
-                    </td>
-                    <td style={{ padding: '0.75rem' }}>
-                      <button className="btn-ghost text-danger" style={{ padding: '0.25rem' }} onClick={() => deleteLedgerEntry(inv.id)}>
-                        <Trash2 size={16} />
-                      </button>
-                    </td>
-                  </tr>
-                )
-              })}
+                  const catalogItem = data.catalog.find(c => c.id === inv.catalogId);
+                  return (
+                    <tr key={inv.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
+                      <td style={{ padding: '0.75rem' }}>{formatDisplayDate(parseLocalDate(inv.dateAdded))}</td>
+                      <td style={{ padding: '0.75rem' }}>{catalogItem ? catalogItem.name : 'Unknown Item'}</td>
+                      <td style={{ padding: '0.75rem' }}>
+                        {inv.type === 'reset' ? <span style={{ color: 'var(--warning-color)' }}>Manual Reset</span> : <span style={{ color: 'var(--success-color)' }}>Restock</span>}
+                      </td>
+                      <td style={{ padding: '0.75rem' }}>
+                        {inv.type === 'reset' ? `${inv.quantity} servings set` : `+${inv.quantity} packs`}
+                      </td>
+                      <td style={{ padding: '0.75rem' }}>
+                        <button className="btn-ghost text-danger" style={{ padding: '0.25rem' }} onClick={() => deleteLedgerEntry(inv.id)}>
+                          <Trash2 size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                })}
               {data.inventory.length === 0 && (
                 <tr><td colSpan="4" style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-secondary)' }}>No restock history found.</td></tr>
               )}
@@ -305,7 +305,7 @@ export default function Pantry({ data, setData, globalFilter, setGlobalFilter })
               <button className="btn-ghost" onClick={() => setEditingItem(null)}><X size={20} /></button>
             </div>
             <form onSubmit={handleSaveItem} className="grid gap-4">
-              <div className="grid gap-4" style={{ gridTemplateColumns: '1fr 1fr' }}>
+              <div className="grid gap-4">
                 <div>
                   <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Item Name (Pack)</label>
                   <input name="name" required defaultValue={editingItem.name || ''} placeholder="e.g., Tofurkey Slices, Thai Box" />
@@ -346,7 +346,7 @@ export default function Pantry({ data, setData, globalFilter, setGlobalFilter })
                       <span>Servings cannot be determined (Track packs only)</span>
                     </label>
                   </div>
-                  
+
                   {!editingItem.isUntracked && (
                     <div className="flex gap-2" style={{ alignItems: 'center' }}>
                       <input type="number" step="any" name="servingUnits" required defaultValue={editingItem.servingUnits || editingItem.servingSize || 1} onChange={(e) => setEditingItem(prev => ({ ...prev, servingUnits: e.target.value }))} style={{ width: '80px', padding: '0.4rem' }} />
@@ -357,7 +357,7 @@ export default function Pantry({ data, setData, globalFilter, setGlobalFilter })
                   )}
                 </div>
               </div>
-              
+
               {!editingItem.isUntracked && (
                 <div className="grid gap-4" style={{ gridTemplateColumns: '1fr 1fr' }}>
                   <div>
@@ -374,13 +374,13 @@ export default function Pantry({ data, setData, globalFilter, setGlobalFilter })
                   </div>
                 </div>
               )}
-              
-              <div style={{ background: 'rgba(255,255,255,0.05)', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--panel-border)', gridColumn: '1 / -1', marginTop: '1rem' }}>
+
+              <div style={{ background: 'rgba(255,255,255,0.05)', padding: '0.75rem', borderRadius: '4px', border: '1px solid var(--panel-border)', gridColumn: '1 / -1', marginTop: '0.25rem' }}>
                 <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: 'var(--accent-color)', fontWeight: 'bold' }}>Low Stock Alerts</label>
                 <div className="grid gap-4" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
                   <div>
                     <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.8rem' }}>Alert Based On</label>
-                    <select name="alertMode" value={editingItem.alertMode || (editingItem.isUntracked ? 'packs' : 'days')} onChange={e => setEditingItem(prev => ({...prev, alertMode: e.target.value}))}>
+                    <select name="alertMode" value={editingItem.alertMode || (editingItem.isUntracked ? 'packs' : 'days')} onChange={e => setEditingItem(prev => ({ ...prev, alertMode: e.target.value }))}>
                       <option value="days" disabled={editingItem.isUntracked}>Days Remaining</option>
                       <option value="packs">Packs Remaining</option>
                       <option value="servings" disabled={editingItem.isUntracked}>Servings Remaining</option>
@@ -397,7 +397,7 @@ export default function Pantry({ data, setData, globalFilter, setGlobalFilter })
                 </div>
               </div>
 
-              <div className="flex flex-between" style={{ marginTop: '1.5rem', alignItems: 'center' }}>
+              <div className="flex flex-between" style={{ marginTop: '0.5rem', alignItems: 'center' }}>
                 <div style={{ background: 'rgba(59, 130, 246, 0.1)', padding: '0.5rem 0.75rem', borderRadius: '4px', border: '1px solid var(--accent-color)' }}>
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-primary)' }}>
                     {editingItem.isUntracked ? (
@@ -407,7 +407,7 @@ export default function Pantry({ data, setData, globalFilter, setGlobalFilter })
                     )}
                   </span>
                 </div>
-                <button type="submit" className="btn-primary">Save Item</button>
+                <button type="submit" className="btn-primary" style={{ padding: '0.75rem 2rem' }}>Save Item</button>
               </div>
             </form>
           </div>

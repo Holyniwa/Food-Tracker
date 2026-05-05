@@ -28,7 +28,7 @@ Pantry Tracker is a high-performance inventory management system designed to eli
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Holyniwa/Pantry-Tracker.git
+   git clone https://github.com/Holyniwa/Food-Tracker.git
    ```
 2. Navigate to the project directory:
    ```bash
@@ -48,5 +48,5 @@ npm run dev
 
 ## Version History
 
-Current Version: **v0.1.1**
-Release Date: April 26, 2026
+Current Version: **v0.1.2**
+Release Date: May 5, 2026
